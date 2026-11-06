@@ -1,0 +1,422 @@
+---
+import { commandGroups } from "../lib/commands";
+import { keysOf } from "../lib/keys";
+// A self-contained, theme-aware animation of Mirada's command palette over a photo: a query types
+// itself in, the list of commands filters, and the selection lands on the one that "runs". Pure CSS
+// keyframes, no JS, and the photo is drawn in SVG, so it stays crisp, recolours its window chrome
+// with the site theme and freezes on a tidy frame under prefers-reduced-motion. Editora's
+// PaletteDemo (by way of Termina's site) with Mirada's window behind it: the header bar, the photo,
+// the floating controls and the thumbnail strip, in AtlantaFX Cupertino's colours (--win-*). The
+// rows are real commands, looked up by id in the generated command data, so a title or chord that
+// changes in the app changes here too.
+const byId = new Map<string, (typeof commandGroups)[number]["commands"][number]>();
+for (const g of commandGroups) for (const c of g.commands) byId.set(c.id, c);
+const rows = [
+  { id: "edit", match: true },
+  { id: "goToImage", match: false },
+  { id: "info", match: false },
+  { id: "thumbnails", match: false },
+  { id: "slideshow", match: false },
+].flatMap(({ id, match }) => {
+  const c = byId.get(id);
+  return c ? [{ title: c.title, description: c.description, keys: keysOf(c), match }] : [];
+});
+const palette = byId.get("palette");
+const paletteKeys = palette ? keysOf(palette) : null;
+const editDescription = rows.find((r) => r.match)?.description ?? "";
+
+// The strip's thumbnails: the same drawn landscape at other hours, the fourth the one on screen.
+const thumbs = [
+  ["#7fb2e5", "#5f9a4a"],
+  ["#f2b37a", "#6d8f3e"],
+  ["#9cc6ef", "#4e8a5a"],
+  ["#8fc0ec", "#6aa548"],
+  ["#c9d6e6", "#7c8d70"],
+  ["#5d7fae", "#3f6a46"],
+  ["#e9c18e", "#8a9b4c"],
+];
+---
+
+<div class="palette-demo" aria-hidden="true">
+  <div class="pd-header">
+    <span class="pd-hbtn">
+      <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" /></svg>
+    </span>
+    <span class="pd-title-bar"><span class="pd-folder">photos /</span> Olive groves.jpg</span>
+    <span class="pd-hbtns">
+      <span class="pd-hbtn"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8" /><path d="M21 3v5h-5" /></svg></span>
+      <span class="pd-hbtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></svg></span>
+      <span class="pd-hbtn"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></svg></span>
+    </span>
+  </div>
+
+  <div class="pd-canvas">
+    <svg class="pd-photo" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="pd-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#6fa8dc" />
+          <stop offset="1" stop-color="#cfe3f3" />
+        </linearGradient>
+        <linearGradient id="pd-field" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8bbf4a" />
+          <stop offset="1" stop-color="#4f8a2c" />
+        </linearGradient>
+      </defs>
+      <rect width="320" height="160" fill="url(#pd-sky)" />
+      <circle cx="252" cy="34" r="13" fill="#fff6d8" opacity="0.9" />
+      <path d="M0 74 L40 58 L78 66 L120 46 L162 62 L205 50 L250 64 L292 52 L320 60 V160 H0 Z" fill="#8a9fb4" opacity="0.75" />
+      <path d="M0 86 Q60 70 120 80 T240 76 T320 82 V160 H0 Z" fill="#6f9a4e" />
+      <path d="M0 100 Q80 86 160 96 T320 94 V160 H0 Z" fill="url(#pd-field)" />
+      <g fill="#3d6b2a">
+        {
+          // Rows of olive trees, smaller and closer together towards the horizon.
+          Array.from({ length: 8 }, (_, row) => {
+            const gap = 9 + row * 2.2;
+            return Array.from({ length: Math.ceil(330 / gap) }, (_, col) => (
+              <circle
+                cx={col * gap + (row % 2) * (gap / 2) + ((col * 7 + row * 3) % 5) - 2}
+                cy={102 + row * (4 + row * 0.9)}
+                r={1.1 + row * 0.42}
+                opacity={0.75 + (((col + row) * 13) % 5) / 20}
+              />
+            ));
+          })
+        }
+      </g>
+      <path d="M0 160 L0 150 Q120 138 200 146 T320 140 V160 Z" fill="#e3d24a" opacity="0.55" />
+    </svg>
+
+    <span class="pd-osd pd-osd-prev"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg></span>
+    <span class="pd-osd pd-osd-next"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg></span>
+
+    <div class="pd-palette">
+      <div class="pd-input">
+        {paletteKeys && <span class="pd-prompt" data-mac={paletteKeys.mac}>{paletteKeys.pc}</span>}
+        <span class="pd-typed">edi</span><span class="pd-caret"></span>
+      </div>
+      <ul class="pd-list">
+        {
+          rows.map((r, i) => (
+            <li class={`pd-row${r.match ? " is-match" : ""}`} style={`--i:${i}`}>
+              <span class="pd-name">{r.title}</span>
+              {r.keys && <span class="pd-chord" data-mac={r.keys.mac}>{r.keys.pc}</span>}
+            </li>
+          ))
+        }
+      </ul>
+      <div class="pd-desc">{editDescription}</div>
+    </div>
+  </div>
+
+  <div class="pd-strip">
+    {
+      thumbs.map(([sky, land], i) => (
+        <span class={`pd-thumb${i === 3 ? " is-current" : ""}`} style={`--sky:${sky};--land:${land}`} />
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .palette-demo {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--win-canvas);
+    overflow: hidden;
+    box-shadow:
+      0 20px 50px -20px rgba(0, 0, 0, 0.6),
+      0 0 0 1px var(--border-soft);
+    font-family: var(--sans);
+    user-select: none;
+  }
+
+  /* the header bar, GNOME Image Viewer's: icon buttons around "folder / name" */
+  .pd-header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.5rem;
+    background: var(--win-header);
+    border-bottom: 1px solid color-mix(in srgb, var(--win-text) 10%, transparent);
+    color: var(--win-text);
+    font-size: clamp(0.58rem, 1.3vw, 0.78rem);
+  }
+  .pd-title-bar {
+    flex: 1;
+    text-align: center;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pd-folder {
+    font-weight: 400;
+    color: var(--win-muted);
+  }
+  .pd-hbtns {
+    display: flex;
+    gap: 0.2rem;
+  }
+  .pd-hbtn {
+    display: inline-grid;
+    place-items: center;
+    width: 1.7em;
+    height: 1.7em;
+  }
+  .pd-hbtn svg,
+  .pd-osd svg {
+    width: 1.15em;
+    height: 1.15em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* the image, filling the canvas */
+  .pd-canvas {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+  }
+  .pd-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* the floating previous/next controls: dark pills on either theme */
+  .pd-osd {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 2em;
+    height: 2em;
+    border-radius: 0.6em;
+    background: rgba(30, 32, 40, 0.78);
+    color: #f2f2f2;
+    font-size: clamp(0.6rem, 1.4vw, 0.85rem);
+  }
+  .pd-osd-prev {
+    left: 3%;
+  }
+  .pd-osd-next {
+    right: 3%;
+  }
+
+  /* the floating palette, in the window's own theme */
+  .pd-palette {
+    position: absolute;
+    left: 50%;
+    top: 8%;
+    transform: translateX(-50%);
+    width: min(78%, 28rem);
+    background: var(--win-header);
+    color: var(--win-text);
+    border: 1px solid color-mix(in srgb, var(--win-text) 14%, transparent);
+    border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    animation: pd-pop 0.5s ease both;
+  }
+
+  .pd-input {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--win-text) 10%, transparent);
+    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  }
+  .pd-prompt {
+    color: #fff;
+    background: var(--win-select);
+    border-radius: 5px;
+    padding: 0.05rem 0.4rem;
+    font-size: 0.78em;
+    font-weight: 600;
+  }
+  .pd-typed {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: bottom;
+    width: 3ch; /* "edi" is 3 chars */
+    /* typewriter: reveal the query by animating width in char-steps —
+       width-based reveal is bulletproof across browsers (unlike animating
+       the `content` property). */
+    animation: pd-type 8s steps(3, end) infinite;
+  }
+  .pd-caret {
+    width: 2px;
+    height: 1.05em;
+    background: var(--win-select);
+    animation: pd-blink 1s steps(1) infinite;
+  }
+
+  .pd-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.3rem;
+  }
+  .pd-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.36rem 0.6rem;
+    border-radius: 7px;
+    font-size: clamp(0.64rem, 1.4vw, 0.84rem);
+    color: var(--win-muted);
+    /* non-matching rows fade out once the query has narrowed the list */
+    animation: pd-filter 8s ease infinite;
+  }
+  .pd-row.is-match {
+    color: var(--win-text);
+    /* the matching row takes the selection through the cycle */
+    animation: pd-select 8s ease infinite;
+  }
+  .pd-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pd-chord {
+    flex: none;
+    color: var(--win-muted);
+    border: 1px solid color-mix(in srgb, var(--win-text) 20%, transparent);
+    border-radius: 5px;
+    padding: 0.02rem 0.4rem;
+    font-size: 0.82em;
+  }
+  /* the line under the list that says what the highlighted command does */
+  .pd-desc {
+    padding: 0.45rem 0.9rem 0.55rem;
+    border-top: 1px solid color-mix(in srgb, var(--win-text) 10%, transparent);
+    color: var(--win-muted);
+    font-size: clamp(0.58rem, 1.2vw, 0.74rem);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* the thumbnail strip along the bottom */
+  .pd-strip {
+    flex: none;
+    display: flex;
+    gap: 2%;
+    padding: 1.6% 2%;
+    background: var(--win-header);
+    border-top: 1px solid color-mix(in srgb, var(--win-text) 10%, transparent);
+  }
+  .pd-thumb {
+    width: 9%;
+    aspect-ratio: 3 / 2;
+    border-radius: 3px;
+    background: linear-gradient(to bottom, var(--sky) 0 48%, var(--land) 48% 100%);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+  .pd-thumb.is-current {
+    outline-color: var(--win-select);
+  }
+
+  @keyframes pd-pop {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+  @keyframes pd-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  /* Reveal "edi" one glyph at a time, hold, then backspace for the loop. */
+  @keyframes pd-type {
+    0% {
+      width: 0;
+    }
+    14%,
+    92% {
+      width: 3ch;
+    }
+    100% {
+      width: 0;
+    }
+  }
+
+  /* Once the query is in (~24%), the non-matching rows collapse away. */
+  @keyframes pd-filter {
+    0%,
+    22% {
+      opacity: 1;
+      max-height: 2.2rem;
+      transform: none;
+    }
+    28%,
+    90% {
+      opacity: 0;
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      transform: translateY(-4px);
+    }
+    100% {
+      opacity: 1;
+      max-height: 2.2rem;
+    }
+  }
+  /* The matching row lights up, then flashes as the "run" moment. */
+  @keyframes pd-select {
+    0%,
+    22% {
+      background: transparent;
+    }
+    30%,
+    82% {
+      background: color-mix(in srgb, var(--win-select) 22%, transparent);
+    }
+    86% {
+      background: var(--win-select);
+      color: #fff;
+    }
+    88%,
+    100% {
+      background: transparent;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pd-palette,
+    .pd-typed,
+    .pd-row,
+    .pd-caret {
+      animation: none !important;
+    }
+    .pd-typed {
+      width: 3ch;
+    }
+    /* freeze on the filtered, selected frame */
+    .pd-row:not(.is-match) {
+      display: none;
+    }
+    .pd-row.is-match {
+      background: color-mix(in srgb, var(--win-select) 22%, transparent);
+      color: var(--win-text);
+    }
+  }
+</style>
