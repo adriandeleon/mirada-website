@@ -273,6 +273,8 @@ static String keyName(String code) {
         case "EQUALS" -> "=";
         case "MINUS" -> "-";
         case "SLASH" -> "/";
+        case "OPEN_BRACKET" -> "[";
+        case "CLOSE_BRACKET" -> "]";
         case "UP" -> "Up";
         case "DOWN" -> "Down";
         case "LEFT" -> "Left";
@@ -414,7 +416,9 @@ static String version(Path repo, String ref) throws IOException, InterruptedExce
     Matcher m = Pattern.compile("<version>([^<]+)</version>").matcher(pom);
     String v = m.find() ? m.group(1).strip() : "";
     if (!v.isEmpty() && !v.endsWith("-SNAPSHOT")) return v;
-    Matcher released = Pattern.compile("(?m)^## (\\d+\\.\\d+\\.\\d+)\\b")
+    // "## [0.4.0] - date" (Keep a Changelog, from 0.4.0) or "## 0.3.0 — date" (older tags);
+    // "## [Unreleased]" names no version and is passed over.
+    Matcher released = Pattern.compile("(?m)^## \\[?(\\d+\\.\\d+\\.\\d+)\\b")
             .matcher(show(repo, ref, "CHANGELOG.md"));
     if (released.find()) return released.group(1);
     throw new IllegalStateException("no released version in pom.xml or CHANGELOG.md at " + ref);
