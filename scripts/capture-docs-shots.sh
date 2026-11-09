@@ -35,7 +35,7 @@ shots=(
   "go-to-image|bay-at-dusk.jpg|key t;wait 1200;key C-p"
   "properties|bay-at-dusk.jpg|key i;wait 800"
   "editor|dunes.jpg|key e;wait 1000"
-  "settings|green-hills.jpg|size 1000 1000;key C-,;wait 1200|240,80,540,920"
+  "settings|green-hills.jpg|size 1000 1000;key C-,;wait 1200|110,60,780,560"
   "rename|night-lake.jpg|key f2;wait 800"
 )
 
