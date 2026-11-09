@@ -8,6 +8,8 @@ order: 3
 An image opens **fitted to the window**: the whole picture, as large as the window allows, never
 larger than its own size unless you zoom.
 
+![A mountain photo zoomed in so it fills the window, with the full-screen button at the top left and the previous, next and zoom controls at the bottom](/screenshots/docs/viewing-zoom.jpg "Zoomed in: drag to pan, and the zoom control at the bottom right goes back to fitted or actual size.")
+
 ## Zoom
 
 | Key | Does |

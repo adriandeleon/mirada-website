@@ -78,4 +78,6 @@ properties sidebar and, off macOS, the main menu; on a Mac the menus are in the 
 pointer over the image for the floating previous, next and zoom controls; they fade when the pointer
 rests. Right-click the image for a menu of what you can do to it.
 
+![Mirada showing a photo of a bay at dusk, the folder and file name in the header bar, the previous, next and zoom controls over the image, and the thumbnail strip along the bottom](/screenshots/docs/window.jpg "The window: the header bar, the image with its floating controls, and the thumbnail strip (T).")
+
 Next: [Viewing](/docs/viewing).

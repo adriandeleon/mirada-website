@@ -9,6 +9,8 @@ order: 5
 sidebar beside the image. It follows you as you step, and [Settings](/docs/settings) can open it
 at start.
 
+![The properties sidebar beside a photo: its folder and position, image size, format, file size, created and modified times, and All Metadata collapsed](/screenshots/docs/properties.jpg "The properties sidebar (I).")
+
 ## What it shows
 
 **The file**: the folder it is in (with a button that opens it in your file manager) and its
