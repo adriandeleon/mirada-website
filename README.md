@@ -55,11 +55,15 @@ under the home page's "In development" heading, and nowhere else.
 
 The window screenshot is `public/screenshots/hero/window.jpg`, and the "A look at the window"
 section renders only when it exists. A photo's screenshot is a JPEG: as a PNG it is five times the
-size.
+size. The current one is 1800×1125, taken headless from the `pauta-6.1.0` branch over
+`green-hills.jpg` from `scripts/gen-sample-photos.py` (light theme, `size 1000 625`, `key t`,
+`key i`): JavaFX's Headless screen is 1000×1000 at scale 1, so it was drawn at 1.8× by a copy of
+Mirada's `HeadlessDriver` whose `shot` snapshots the scene with a scale transform, patched in ahead of
+the test classes (`MIRADA_PATCH=<dir>:target/test-classes`, `-Dshot.scale=1.8`).
 
 Feature screenshots go in `public/screenshots/features/<slug>.jpg` (or `.png`); the slug matches the
 page URL, so `/features/editor` → `editor.jpg`. Without one the card and the page show a
-placeholder. The window shot and the first three feature shots (`fast-start`, `properties`,
+placeholder. The first three feature shots (`fast-start`, `properties`,
 `thumbnails`) are from the same capture of a development build after 0.3.0, the folder shown before
 the file name in the header; the rest are placeholders until a capture of the release replaces them.
 Capture from a build of the release tag, on photos you are free to publish.
