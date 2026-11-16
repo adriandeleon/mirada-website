@@ -52,7 +52,11 @@ A drag is one step, recorded when you let go, and a run of arrow presses is one 
 - The file is written beside its target first and then moved over it, so a failed save never leaves
   half a file.
 
-<kbd>Esc</kbd> or **Cancel** closes the editor without saving.
+<kbd>Esc</kbd> or **Cancel** closes the editor. With an edit not yet saved, leaving it (Cancel,
+<kbd>Esc</kbd>, closing the window, Quit) asks first: **Save** (the default) saves and leaves,
+**Discard** drops the edit, and **Cancel** stays in the editor. Save keeps the editor open when the
+save does not go through. In every question before something is lost, <kbd>Enter</kbd> never
+removes or discards.
 
 While the editor is open, nothing changes the image under it: stepping, trashing and renaming are
 turned away until it closes.

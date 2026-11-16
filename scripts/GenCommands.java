@@ -18,6 +18,7 @@ static final Path OUT = Path.of("src/lib");
 static final String COMMAND = "src/main/java/com/mirada/ui/Command.java";
 static final String SETTINGS = "src/main/java/com/mirada/settings/Settings.java";
 static final String KEYMAPS = "src/main/resources/com/mirada/keymaps/";
+static final String MESSAGES = "src/main/resources/com/mirada/i18n/messages.properties";
 
 /** One command: its label, what the palette says it does, and its chord off macOS and on it. */
 record Cmd(String id, String title, String description, List<String> pc, List<String> mac) {}
@@ -51,7 +52,12 @@ void main(String[] args) throws IOException, InterruptedException {
 
     // The constants run from the enum's brace to the first top-level semicolon.
     List<String> constants = constants(source, open + "enum Command {".length());
-    Map<String, String> groupOf = groupOf(method(source, "String group()"));
+    // From 0.4.0 on, a constant is (id, keywords): its label, its description and its group's heading
+    // are in the English catalog, as command.<id>, command.<id>.desc and group.<key>.
+    boolean catalog = exists(repo, ref, MESSAGES);
+    Properties messages = new Properties();
+    if (catalog) messages.load(new StringReader(show(repo, ref, MESSAGES)));
+    Map<String, String> groupOf = groupOf(method(source, "String group()"), messages);
     // From the keymaps on, a constant is (id, label, description, keywords) and its keys are the keymap's.
     boolean keymaps = exists(repo, ref, KEYMAPS + "cua.json");
     Map<String, String> pcKeys = keymaps ? firstKeys(show(repo, ref, KEYMAPS + "cua.json")) : Map.of();
@@ -66,11 +72,20 @@ void main(String[] args) throws IOException, InterruptedException {
         if (!m.find()) throw new IllegalStateException("cannot read constant: " + constant);
         String name = m.group(1);
         List<String> a = arguments(constant, m.end());
-        if (a.size() != 4) throw new IllegalStateException(name + " has " + a.size() + " arguments, not 4");
+        int expected = catalog ? 2 : 4;
+        if (a.size() != expected)
+            throw new IllegalStateException(name + " has " + a.size() + " arguments, not " + expected);
         String title;
         String description;
         Pair chord;
-        if (keymaps) {
+        if (catalog) {
+            String id = string(a.get(0));
+            title = message(messages, "command." + id);
+            description = message(messages, "command." + id + ".desc");
+            String pc = pcKeys.get(id);
+            String mac = macKeys.get(id);
+            chord = new Pair(pc == null ? null : tokenKeys(pc, false), mac == null ? null : tokenKeys(mac, true));
+        } else if (keymaps) {
             String id = string(a.get(0));
             title = string(a.get(1));
             description = string(a.get(2));
@@ -184,12 +199,26 @@ static String method(String s, String signature) {
     throw new IllegalStateException("unbalanced " + signature);
 }
 
-/** {@code case A, B -> "Folder";} arms: each constant's heading. */
-static Map<String, String> groupOf(String body) {
+/**
+ * {@code case A, B -> "Folder";} arms, or {@code case A, B -> tr("group.folder");} with the heading in
+ * the catalog: each constant's heading.
+ */
+static Map<String, String> groupOf(String body, Properties messages) {
     Map<String, String> out = new HashMap<>();
-    Matcher m = Pattern.compile("case\\s+([\\w\\s,]+?)\\s*->\\s*\"([^\"]+)\"").matcher(body);
-    while (m.find()) for (String name : m.group(1).split("\\s*,\\s*")) out.put(name.strip(), m.group(2));
+    Matcher m = Pattern.compile("case\\s+([\\w\\s,]+?)\\s*->\\s*(?:tr\\(\\s*)?\"([^\"]+)\"(\\s*\\))?")
+            .matcher(body);
+    while (m.find()) {
+        String heading = m.group(3) != null ? message(messages, m.group(2)) : m.group(2);
+        for (String name : m.group(1).split("\\s*,\\s*")) out.put(name.strip(), heading);
+    }
     return out;
+}
+
+/** The English catalog's string for {@code key}; a missing one stops the script rather than guessing. */
+static String message(Properties messages, String key) {
+    String value = messages.getProperty(key);
+    if (value == null) throw new IllegalStateException("no " + key + " in " + MESSAGES);
+    return value.strip();
 }
 
 /** The arms of chord(boolean mac)'s switch: the Mac's own chord for a command, as Finder's keys. */
