@@ -15,7 +15,7 @@
 set -euo pipefail
 site="$(cd "$(dirname "$0")/.." && pwd)"
 repo="${MIRADA_REPO:-$site/../Mirada}"
-if [ $# -gt 0 ] && [ -d "$1/.git" ]; then repo="$1"; shift; fi
+if [ $# -gt 0 ] && [ -e "$1/.git" ]; then repo="$1"; shift; fi
 repo="$(cd "$repo" && pwd)"
 only=("$@")
 

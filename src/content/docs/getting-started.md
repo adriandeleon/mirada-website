@@ -51,6 +51,9 @@ sha256sum -c --ignore-missing SHA256SUMS
 - **From a shell**, give it the file or folder. The deb puts `mirada` on your path
   (`mirada ~/Pictures/photo.jpg`); from the rpm the launcher is `/opt/mirada/bin/Mirada`.
 
+An empty window has **Open Image**, **Open Folder** and, once there is a recent folder, **Open
+Recent** buttons, each with its key under it from the keymap in use.
+
 Opening a file opens its whole folder, starting at that file. Opening a folder starts at its first
 image. Opening several files at once (`mirada a.jpg b.jpg c.jpg`) steps through just those, and a
 folder among them adds its images.
@@ -91,7 +94,8 @@ them all.
 
 ## The window
 
-The title bar names the folder and the file. On Windows and Linux it also carries the menus, File,
+The title bar names the folder and the file; the window's title, as the taskbar and the window
+switcher show it, is "photo.jpg — Holiday — Mirada", with ● in front while an edit is not saved. On Windows and Linux it also carries the menus, File,
 Edit, Image, View, Go, Bookmarks and Help, as a Mac's menu bar does; <kbd>F10</kbd> or <kbd>Alt</kbd>
 opens them from the keyboard. Each row shows its key, and one that cannot run now stays, greyed, and
 says why. **Settings › General › Menu bar in the title bar** turned off puts them in a bar of their
@@ -100,6 +104,6 @@ floating previous, next and zoom controls; they fade when the pointer rests. Rig
 for a menu of what you can do to it. **Quit Mirada** (<kbd>Ctrl+Q</kbd>, <kbd>⌘Q</kbd> on a Mac)
 ends the File menu; like closing the window, it asks first about an edit not yet saved.
 
-![Mirada showing a photo of a bay at dusk, the folder and file name in the header bar, the previous, next and zoom controls over the image, and the thumbnail strip along the bottom](/screenshots/docs/window.jpg "The window: the header bar, the image with its floating controls, and the thumbnail strip (T).")
+![Mirada showing a photo of a bay at dusk, the menus and the folder and file name in the title bar, the previous, next and zoom controls over the image, and the thumbnail strip along the bottom](/screenshots/docs/window.jpg "The window: the header bar, the image with its floating controls, and the thumbnail strip (T).")
 
 Next: [Viewing](/docs/viewing).

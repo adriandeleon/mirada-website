@@ -71,8 +71,8 @@ with no window on the desktop (Mirada's `scripts/headless-run.sh`), over picture
 anyone else. A Markdown image alone in its paragraph becomes a figure
 (`src/lib/rehype-doc-figures.mjs`, Editora's): alt text is required, the title is the caption, the
 site's theme picks the light or dark capture, and a missing file fails the build. The current set is
-from a development build after 0.3.0 (the `pauta-4.0.1` branch), so some of what they show (the
-status bar, the keymap setting, the editor's commands in the palette) is not in 0.3.0; take them
+from a development build after 0.3.0 (the `pauta-6.1.0` branch), so much of what they show (the
+menus in the title bar, the status bar, the Settings pages, the editor's commands in the palette) is not in 0.3.0; take them
 again from the next release:
 
 ```bash
