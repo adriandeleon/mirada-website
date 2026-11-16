@@ -32,6 +32,10 @@ them: EXIF, the maker's notes, XMP, IPTC, the colour profile, and what the forma
 It is read by [metadata-extractor](https://github.com/drewnoakes/metadata-extractor), which reads
 JPEG, PNG, WebP, TIFF, PSD, HEIC, AVIF and the rest.
 
+**All Metadata** in the View menu and the palette opens the sidebar with every tag unfolded, and
+folds them away again, so it needs no mouse; it stays unfolded from image to image. The list shows
+the first 300 tags and says how many more the file has.
+
 A file whose metadata cannot be read still opens: the sidebar shows what it could find.
 
 ## Nothing is written

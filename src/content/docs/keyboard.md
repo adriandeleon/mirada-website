@@ -74,3 +74,20 @@ palette.keys=C-S-p M-x f1
 `Cmd-` <kbd>⌘</kbd>. A key the palette uses to move its selection, such as <kbd>Ctrl+P</kbd>, stays
 the palette's while it is open. A setting with no key Mirada can read is the default again, so a
 bad edit never leaves the palette without a way in.
+
+## Your own keys
+
+Any command can be given keys of your own in `settings.properties`, as `keys.<command id>`, and they
+win over the keymap's; a blank value takes its keys away:
+
+```properties
+keys.go.next=n space
+keys.tool.properties=C-i
+```
+
+Each command's id, such as `go.next` or `editor.save`, is in Mirada's
+[keymaps](https://github.com/adriandeleon/Mirada/tree/main/src/main/resources/com/mirada/keymaps).
+The properties sidebar and the
+thumbnail strip are `tool.properties` and `tool.thumbnails` (<kbd>I</kbd> and <kbd>T</kbd>, and
+<kbd>M-1</kbd> and <kbd>M-2</kbd> in the Emacs keymap); keys you gave them under their old names,
+`view.properties` and `view.thumbnails`, move to the new ones at the next start.
