@@ -11,9 +11,10 @@ Yes. It is free and open source under the MIT License, with no paid tier, no acc
 
 ## Does it collect anything?
 
-No. Mirada sends nothing anywhere: no telemetry, no crash reports, no update check. It reads the
-files you open and writes only its own settings file, and what you ask it to (a rename, a move to
-the Trash, an edit saved as a new file).
+No. Mirada sends nothing anywhere: no telemetry, no crash reports. Once a day it asks GitHub for
+the latest release, to say when a newer one is out, and **Settings › Updates** turns that off. It
+reads the files you open and writes only its own settings, and what you ask it to (a rename, a move
+to the Trash, an edit saved as a new file).
 
 ## Does it change my photos?
 
@@ -58,19 +59,32 @@ A known gap of the Intel build, which is a Java runtime rather than a native exe
 delivers the file before Mirada is listening for it. Once Mirada is running, opening a file from
 Finder works. Apple silicon Macs are not affected.
 
-## Why does Escape close the window on Linux but not elsewhere?
+## Why doesn't Escape close the window?
 
-GNOME's Image Viewer closes on Escape, and Linux keeps that habit: look, then go. On macOS and
-Windows no viewer does, and a stray press would lose your place, so there Escape only stops a
-slideshow or leaves full screen.
+A stray press would lose your place. Escape stops a slideshow or leaves full screen, the same on
+every system; <kbd>Ctrl+W</kbd> closes the window and **Quit Mirada** (<kbd>Ctrl+Q</kbd>) ends
+Mirada. Mirada 0.3.0 and earlier closed on Escape on Linux, as GNOME's Image Viewer does.
 
 ## Where are my settings?
 
-In `settings.properties`: `~/.mirada` on Linux, `~/Library/Application Support/Mirada` on macOS,
-`%APPDATA%\Mirada` on Windows. See [Settings](/docs/settings).
+In `settings.properties`, in `~/.mirada` on every system (an older Mirada's folder on macOS or
+Windows is moved there once). See [Settings](/docs/settings#the-settings-file).
 
 ## How do I report a problem?
 
-Open an [issue on GitHub](https://github.com/adriandeleon/Mirada/issues), with your platform, the
-version (About, <kbd>F12</kbd>, shows it with the codec versions) and, if a file will not open, what
-kind of file it is.
+**Help › Report a Problem…** writes a report (the version, the runtime, the codecs, the system,
+the settings and the end of the Debug Log) with home folders, names, e-mail addresses and tokens
+taken out, for you to read and edit, then opens a GitHub issue with it filled in. Nothing is sent by
+itself. When Mirada will not start, `mirada --report` does the same and writes
+`problem-report.txt` in the folder you typed it in.
+
+**Help › Debug Log** shows what Mirada has logged this session. <kbd>Ctrl+F</kbd> or <kbd>F3</kbd>
+(<kbd>⌘F</kbd> on a Mac, <kbd>C-s</kbd> in Emacs) opens a find bar under it that searches as you
+type and counts the matches; <kbd>Enter</kbd> and <kbd>Shift+Enter</kbd> step to the next and the
+previous, the find key again finds the next, and <kbd>Esc</kbd> puts the keyboard back in the log.
+
+## How far does Mirada follow Pauta?
+
+Mirada is built to [Pauta](https://pauta-project.dev), the adl desktop apps guidelines.
+**Help › Pauta Conformance** says how fully it conforms and lists each rule it does not meet yet;
+[Pauta conformance](/docs/pauta) is the same list.
