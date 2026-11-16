@@ -1,7 +1,9 @@
 // Generates src/lib/commands.ts (the Keybindings page, the home page's keys, the palette demo) and
 // src/lib/version.ts from a Mirada checkout: every constant of the Command enum (its label, its
-// one-line description and its chord), the heading Command.group() puts it under, and the Mac
-// chords Command.chord(boolean) swaps in.
+// one-line description and its chord) and the heading Command.group() puts it under. The chords are
+// the first key each command has in Mirada's own keymap, keymaps/cua.json, and on a Mac in
+// cua.mac.json; a ref from before the keymaps (0.3.0 and older) has them in the enum instead, with
+// the Mac chords Command.chord(boolean) swaps in, and is read that way.
 //
 //   java scripts/GenCommands.java [/path/to/Mirada] [--ref=v0.3.0]
 //
@@ -15,6 +17,7 @@ static final Path OUT = Path.of("src/lib");
 
 static final String COMMAND = "src/main/java/com/mirada/ui/Command.java";
 static final String SETTINGS = "src/main/java/com/mirada/settings/Settings.java";
+static final String KEYMAPS = "src/main/resources/com/mirada/keymaps/";
 
 /** One command: its label, what the palette says it does, and its chord off macOS and on it. */
 record Cmd(String id, String title, String description, List<String> pc, List<String> mac) {}
@@ -49,8 +52,13 @@ void main(String[] args) throws IOException, InterruptedException {
     // The constants run from the enum's brace to the first top-level semicolon.
     List<String> constants = constants(source, open + "enum Command {".length());
     Map<String, String> groupOf = groupOf(method(source, "String group()"));
-    Map<String, Pair> macOverride = macOverrides(method(source, "KeyCombination chord(boolean mac)"));
-    Pair palette = paletteDefault(show(repo, ref, SETTINGS));
+    // From the keymaps on, a constant is (id, label, description, keywords) and its keys are the keymap's.
+    boolean keymaps = exists(repo, ref, KEYMAPS + "cua.json");
+    Map<String, String> pcKeys = keymaps ? firstKeys(show(repo, ref, KEYMAPS + "cua.json")) : Map.of();
+    Map<String, String> macKeys = keymaps ? firstKeys(show(repo, ref, KEYMAPS + "cua.mac.json")) : Map.of();
+    Map<String, Pair> macOverride =
+            keymaps ? Map.of() : macOverrides(method(source, "KeyCombination chord(boolean mac)"));
+    Pair palette = keymaps ? Pair.NONE : paletteDefault(show(repo, ref, SETTINGS));
 
     LinkedHashMap<String, List<Cmd>> groups = new LinkedHashMap<>();
     for (String constant : constants) {
@@ -59,13 +67,28 @@ void main(String[] args) throws IOException, InterruptedException {
         String name = m.group(1);
         List<String> a = arguments(constant, m.end());
         if (a.size() != 4) throw new IllegalStateException(name + " has " + a.size() + " arguments, not 4");
-        Pair chord = name.equals("PALETTE") ? palette : chord(a.get(3));
-        Pair mac = macOverride.get(name);
-        if (mac != null) chord = new Pair(chord.pc(), mac.mac());
+        String title;
+        String description;
+        Pair chord;
+        if (keymaps) {
+            String id = string(a.get(0));
+            title = string(a.get(1));
+            description = string(a.get(2));
+            String pc = pcKeys.get(id);
+            String mac = macKeys.get(id);
+            chord = new Pair(pc == null ? null : tokenKeys(pc, false), mac == null ? null : tokenKeys(mac, true));
+        } else {
+            title = string(a.get(0));
+            description = string(a.get(1));
+            chord = name.equals("PALETTE") ? palette : chord(a.get(3));
+            Pair mac = macOverride.get(name);
+            if (mac != null) chord = new Pair(chord.pc(), mac.mac());
+        }
         String group = groupOf.get(name);
         if (group == null) throw new IllegalStateException(name + " is in no group in Command.group()");
+        // The site's anchors and palette demo know a command by its constant in camel case.
         groups.computeIfAbsent(group, g -> new ArrayList<>())
-                .add(new Cmd(camel(name), string(a.get(0)), string(a.get(1)), chord.pc(), chord.mac()));
+                .add(new Cmd(camel(name), title, description, chord.pc(), chord.mac()));
     }
 
     StringBuilder ts = new StringBuilder();
@@ -204,6 +227,80 @@ static List<String> keyChord(String token, boolean mac) {
     return ordered(mods, parts[parts.length - 1].toUpperCase(Locale.ROOT), mac);
 }
 
+// --- keymaps ---
+
+static final Pattern BINDING = Pattern.compile("\"([a-z]+\\.[a-zA-Z0-9]+)\"\\s*:\\s*(\\[[^\\]]*\\]|\"(?:\\\\.|[^\"\\\\])*\")");
+
+/** A keymap's "bindings" (not its "vertical" ones): each command id and the first of its keys, the one shown. */
+static Map<String, String> firstKeys(String json) {
+    int at = json.indexOf("\"bindings\"");
+    if (at < 0) throw new IllegalStateException("a keymap without bindings");
+    int open = json.indexOf('{', at);
+    int depth = 0;
+    int close = -1;
+    for (int i = open; i < json.length() && close < 0; i++) {
+        if (json.charAt(i) == '{') depth++;
+        if (json.charAt(i) == '}' && --depth == 0) close = i;
+    }
+    Map<String, String> out = new HashMap<>();
+    Matcher m = BINDING.matcher(json.substring(open + 1, close));
+    while (m.find()) {
+        Matcher first = LITERAL.matcher(m.group(2));
+        if (first.find()) out.put(m.group(1), first.group(1).replace("\\\"", "\"").replace("\\\\", "\\"));
+    }
+    return out;
+}
+
+/** A KeyChord token from a keymap ("C-S-p", "Cmd-backspace", "plus", "C-?") as keys. */
+static List<String> tokenKeys(String token, boolean mac) {
+    List<String> mods = new ArrayList<>();
+    String rest = token;
+    while (true) {
+        if (rest.startsWith("Cmd-") && rest.length() > 4) {
+            mods.add("Cmd");
+            rest = rest.substring(4);
+        } else if (rest.startsWith("C-") && rest.length() > 2) {
+            mods.add("Ctrl");
+            rest = rest.substring(2);
+        } else if (rest.startsWith("M-") && rest.length() > 2) {
+            mods.add(mac ? "Option" : "Alt");
+            rest = rest.substring(2);
+        } else if (rest.startsWith("S-") && rest.length() > 2) {
+            mods.add("Shift");
+            rest = rest.substring(2);
+        } else break;
+    }
+    String key = switch (rest) {
+        case "right" -> "Right";
+        case "left" -> "Left";
+        case "up" -> "Up";
+        case "down" -> "Down";
+        case "home" -> "Home";
+        case "end" -> "End";
+        case "pageup" -> "Page Up";
+        case "pagedown" -> "Page Down";
+        case "enter" -> "Enter";
+        case "escape" -> "Esc";
+        case "delete" -> "Delete";
+        case "backspace" -> "Backspace";
+        case "space" -> "Space";
+        case "tab" -> "Tab";
+        case "plus", "add" -> "+";
+        case "subtract" -> "-";
+        default -> {
+            if (rest.matches("f\\d{1,2}")) yield rest.toUpperCase(Locale.ROOT);
+            if (rest.codePointCount(0, rest.length()) == 1) yield rest.toUpperCase(Locale.ROOT);
+            throw new IllegalStateException("key not understood in " + token);
+        }
+    };
+    return ordered(mods, key, mac);
+}
+
+static boolean exists(Path repo, String ref, String path) throws IOException, InterruptedException {
+    Process p = new ProcessBuilder("git", "-C", repo.toString(), "cat-file", "-e", ref + ":" + path).start();
+    return p.waitFor() == 0;
+}
+
 // --- chords ---
 
 static final Pattern HELPER = Pattern.compile("^(key|shift|shortcut)\\(KeyCode\\.(\\w+)\\)$");
@@ -273,6 +370,8 @@ static String keyName(String code) {
         case "EQUALS" -> "=";
         case "MINUS" -> "-";
         case "SLASH" -> "/";
+        case "OPEN_BRACKET" -> "[";
+        case "CLOSE_BRACKET" -> "]";
         case "UP" -> "Up";
         case "DOWN" -> "Down";
         case "LEFT" -> "Left";
@@ -414,7 +513,9 @@ static String version(Path repo, String ref) throws IOException, InterruptedExce
     Matcher m = Pattern.compile("<version>([^<]+)</version>").matcher(pom);
     String v = m.find() ? m.group(1).strip() : "";
     if (!v.isEmpty() && !v.endsWith("-SNAPSHOT")) return v;
-    Matcher released = Pattern.compile("(?m)^## (\\d+\\.\\d+\\.\\d+)\\b")
+    // "## [0.4.0] - date" (Keep a Changelog, from 0.4.0) or "## 0.3.0 — date" (older tags);
+    // "## [Unreleased]" names no version and is passed over.
+    Matcher released = Pattern.compile("(?m)^## \\[?(\\d+\\.\\d+\\.\\d+)\\b")
             .matcher(show(repo, ref, "CHANGELOG.md"));
     if (released.find()) return released.group(1);
     throw new IllegalStateException("no released version in pom.xml or CHANGELOG.md at " + ref);
