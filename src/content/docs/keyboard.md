@@ -30,6 +30,8 @@ with its key, and the highlighted one's description underneath. Type to narrow t
 match in order, not necessarily together, so `kz` finds Keep Zoom When Stepping. A command that
 cannot run right now, such as Next Image on the last image, is greyed, with the reason.
 
+![The command palette over the window with "rot" typed: Rotate Left highlighted with its key Shift+R, then Rotate Right, the editor's rotate commands greyed, and the highlighted command's description underneath](/screenshots/docs/palette.jpg "The command palette, narrowed to "rot": each command with its key, the greyed ones with a reason.")
+
 Inside the palette:
 
 | Key | Does |

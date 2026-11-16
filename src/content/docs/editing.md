@@ -8,6 +8,8 @@ order: 6
 **Edit…** (<kbd>E</kbd>) opens the editor over the image: crop, turn and flip, then save the result
 as a **new file**. The original is untouched unless you choose it yourself in the save dialog.
 
+![The editor over a photo of dunes: Cancel and Save at the top, the crop box with its handles and thirds, and the crop shape, turn, flip, undo, redo and reset tools along the bottom](/screenshots/docs/editor.jpg "The editor (E): crop, turn and flip, then save as a new file.")
+
 ## Crop
 
 Drag the crop box's corners and edges, or drag inside it to move it. Below the image, **Crop**

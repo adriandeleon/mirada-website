@@ -8,6 +8,8 @@ order: 10
 **Settings** (<kbd>Ctrl+,</kbd>, <kbd>⌘,</kbd> in the Mirada menu on a Mac) applies each change the
 moment you make it; there is no Save button.
 
+![The Settings window: a search field on top, a sidebar of pages (General, Viewer, Thumbnails, Folder, Keys, Backup), and the General page with the theme, what opens at start and the update check](/screenshots/docs/settings.jpg "Settings (Ctrl+,): every change applies at once.")
+
 ## Appearance
 
 - **Theme**: follow the system, light, or dark. Following the system tracks it as it changes. On
