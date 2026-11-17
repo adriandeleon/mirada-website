@@ -10,10 +10,11 @@ moment you make it; there is no Save button.
 
 ## Appearance
 
-- **Theme**: follow the system, light, or dark. Following the system tracks it as it changes. On
-  macOS and Windows the current thumbnail, the palette's highlighted row and every selection take
-  the system's accent colour, adjusted when it is too pale or too deep to read text on; Linux keeps
-  the blue.
+- **Theme**: follow the system, light, dark, high contrast, Editora Light or Editora Dark. Following
+  the system tracks it as it changes. On macOS and Windows the current thumbnail, the palette's
+  highlighted row and every selection take the system's accent colour, adjusted when it is too pale
+  or too deep to read text on; Linux keeps the blue. The Editora themes, the pair from
+  [Editora](https://editora-project.dev), keep their own teal accent everywhere.
 
 ## Viewer
 
