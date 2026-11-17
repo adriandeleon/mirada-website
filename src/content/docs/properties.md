@@ -9,6 +9,8 @@ order: 5
 sidebar beside the image. It follows you as you step, and [Settings](/docs/settings) can open it
 at start.
 
+![The properties sidebar beside a photo: its folder and position, image size, format, file size, created and modified times, and All Metadata collapsed](/screenshots/docs/properties.jpg "The properties sidebar (I).")
+
 ## What it shows
 
 **The file**: the folder it is in (with a button that opens it in your file manager) and its
@@ -29,6 +31,10 @@ Under the camera, **All Metadata** lists every tag the file carries, grouped as 
 them: EXIF, the maker's notes, XMP, IPTC, the colour profile, and what the format itself records.
 It is read by [metadata-extractor](https://github.com/drewnoakes/metadata-extractor), which reads
 JPEG, PNG, WebP, TIFF, PSD, HEIC, AVIF and the rest.
+
+**All Metadata** in the View menu and the palette opens the sidebar with every tag unfolded, and
+folds them away again, so it needs no mouse; it stays unfolded from image to image. The list shows
+the first 300 tags and says how many more the file has.
 
 A file whose metadata cannot be read still opens: the sidebar shows what it could find.
 

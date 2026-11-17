@@ -1,0 +1,130 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { releases, inDevelopment, nextCount } from "../lib/whatsnew";
+import { repo } from "../lib/mirada";
+
+// Every release's notes as the changelog has them, newest first. Generated from Mirada's
+// CHANGELOG.md at the release tag (scripts/GenWhatsNew.java), the file the GitHub release and the
+// app's release notes come from too, so the three never disagree (Pauta DOCS-05).
+---
+
+<Layout
+  title="What's new — Mirada"
+  description="Every Mirada release, newest first: what was added, what changed and what was fixed, from the changelog."
+>
+  <main class="page" data-pagefind-body data-pagefind-meta="kind:Reference">
+    <h1>What's new</h1>
+    <p class="lead">
+      Every release of Mirada, newest first, as its <a href={`${repo}/blob/main/CHANGELOG.md`}>changelog</a>
+      and its <a href={`${repo}/releases`}>GitHub release</a> tell it. Each entry opens with what it means for you.
+    </p>
+
+    {
+      nextCount > 0 && (
+        <section class="release next" id="in-development">
+          <h2>In development</h2>
+          <p class="note">
+            On <code>main</code> and headed for the next release, but in no release yet.
+          </p>
+          {inDevelopment.map((s) => (
+            <>
+              <h3>{s.heading}</h3>
+              <ul>
+                {s.items.map((i) => (
+                  <li set:html={i} />
+                ))}
+              </ul>
+            </>
+          ))}
+        </section>
+      )
+    }
+
+    {
+      releases.map((r) => (
+        <section class="release" id={`v${r.version}`}>
+          <h2>
+            <a href={`${repo}/releases/tag/v${r.version}`}>Mirada {r.version}</a>
+            {r.date && <span class="date">{r.date}</span>}
+          </h2>
+          {r.sections.map((s) => (
+            <>
+              <h3>{s.heading}</h3>
+              <ul>
+                {s.items.map((i) => (
+                  <li set:html={i} />
+                ))}
+              </ul>
+            </>
+          ))}
+        </section>
+      ))
+    }
+  </main>
+</Layout>
+
+<style>
+  .page {
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 2rem;
+  }
+  h1 {
+    font-size: 2.4rem;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .lead {
+    color: var(--muted);
+    font-size: 1.05rem;
+    margin: 0 0 2rem;
+  }
+  .release {
+    margin: 0 0 2.5rem;
+    scroll-margin-top: 5rem;
+  }
+  .release h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .release h2 a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .release h2 a:hover {
+    color: var(--accent);
+  }
+  .date {
+    color: var(--faint);
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+  h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--faint);
+    margin: 1.25rem 0 0.4rem;
+  }
+  ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+  li {
+    margin: 0 0 0.6rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  li :global(strong) {
+    color: var(--text);
+  }
+  .note {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+</style>

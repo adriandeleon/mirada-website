@@ -38,6 +38,8 @@ with the current one under the cursor. Type part of a name, as loosely as you li
 `IMG_20260412_0930.jpg`), and press <kbd>Enter</kbd> to show it. Names that match equally well stay
 in the folder's order.
 
+![The Go to Image palette over the window, listing the six images of the folder by name with the current one highlighted](/screenshots/docs/go-to-image.jpg "Go to Image (Ctrl+P) lists the folder by name; type to narrow it.")
+
 ## Open Recent
 
 **Open Recent…** (<kbd>Ctrl+Shift+O</kbd>, <kbd>⇧⌘O</kbd>) is the palette over the last ten folders

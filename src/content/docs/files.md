@@ -15,6 +15,8 @@ part before the extension selected, so typing replaces just that. A name typed w
 keeps the old one, and a name another file already has is refused rather than overwritten. The
 image keeps its place in the folder's order, by its new name.
 
+![The Rename dialog over a night photo, the name night-lake.jpg in the field](/screenshots/docs/rename.jpg "Rename (F2): type the new name; the extension is kept.")
+
 ## Move to Trash
 
 **Move to Trash** (<kbd>Delete</kbd>; <kbd>⌘⌫</kbd> on a Mac, whose Delete key is Backspace) moves

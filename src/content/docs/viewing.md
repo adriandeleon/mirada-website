@@ -8,6 +8,8 @@ order: 3
 An image opens **fitted to the window**: the whole picture, as large as the window allows, never
 larger than its own size unless you zoom.
 
+![A mountain photo zoomed in so it fills the window, with the full-screen button at the top left and the previous, next and zoom controls at the bottom](/screenshots/docs/viewing-zoom.jpg "Zoomed in: drag to pan, and the zoom control at the bottom right goes back to fitted or actual size.")
+
 ## Zoom
 
 | Key | Does |
@@ -22,7 +24,12 @@ The **mouse wheel** zooms about the pointer, so the spot under it stays put. Abo
 are drawn as crisp squares rather than smoothed, so you can see what the file really holds.
 
 The floating controls that appear when the pointer moves over the image have zoom buttons too,
-and a menu of zoom steps.
+and a menu of zoom steps. <kbd>Ctrl+=</kbd>, <kbd>Ctrl+-</kbd> and <kbd>Ctrl+0</kbd> zoom the image
+as well, in every keymap.
+
+To make Mirada itself larger or smaller, its menus, header, palette and windows, rather than the
+image, use the **interface zoom**: <kbd>Ctrl+Alt+=</kbd>, <kbd>Ctrl+Alt+-</kbd> and
+<kbd>Ctrl+Alt+0</kbd> (<kbd>⌘⌥</kbd> on a Mac), or [Settings](/docs/settings#appearance).
 
 ## Pan
 
