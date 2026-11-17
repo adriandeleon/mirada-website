@@ -43,3 +43,13 @@ file there. With the image zoomed in, dragging pans instead.
 
 **Show in Folder** opens the image's folder in your file manager with the image selected. It is
 called **Show in Finder** on a Mac and **Show in File Explorer** on Windows.
+
+## Print
+
+**Print…** (File menu, or the command palette) prints the image as it stands on screen, turned as
+you turned it, through your desktop's own print dialog: GTK's on Linux, the system's on macOS and
+Windows. Choose the printer, the paper and the copies there, or print to a PDF file. The image
+fills the page, centred and never cropped, and a wide image starts on a landscape page.
+
+Print has no key of its own, since <kbd>Ctrl+P</kbd> (<kbd>⌘P</kbd>) goes to an image by name. To
+give it one, add a line such as `keys.file.print=p` to Mirada's settings file.
