@@ -17,7 +17,8 @@ moment you make it; there is no Save button.
   back. Following the system tracks it as it changes. On
   macOS and Windows the current thumbnail, the palette's highlighted row and every selection take
   the system's accent colour, adjusted when it is too pale or too deep to read text on; Linux keeps
-  the blue.
+  the blue. Editora Light and Editora Dark, the pair from
+  [Editora](https://editora-project.dev), keep their own teal accent everywhere.
 - **Interface zoom**: draws the menus, the header, the status bar, the palette, the floating
   controls and every window from 80 % to 200 %, in every open window at once. **Zoom Interface In**,
   **Zoom Interface Out** and **Reset Interface Zoom** in the View menu do the same, on
